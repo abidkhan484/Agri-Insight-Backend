@@ -1,0 +1,71 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+bin/
+include/
+lib/
+lib64/
+share/
+
+# Virtual environments
+.env/
+.venv/
+ENV/
+venv/
+
+# Django stuff:
+*.log
+db.sqlite3
+
+# Migrations
+migrations/versions/
+migrations/__pycache__/
+
+# Alembic
+alembic.ini
+
+# VS Code settings
+.vscode/
+
+# Pytest
+.cache/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Local env files
+.env
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# API cache or build
+api/__pycache__/
+app/__pycache__/
+schemas/__pycache__/
+services/__pycache__/
+models/__pycache__/
+utils/__pycache__/
+
+# Ignore compiled files in all subdirs
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd 
