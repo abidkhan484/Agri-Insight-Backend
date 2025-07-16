@@ -23,26 +23,41 @@ This backend service fetches YouTube playlist videos, retrieves their transcript
 ├── main.py
 ├── requirements.txt
 ├── .env
+├── docker/
+│   └── Dockerfile
+├── docker-compose.yml
 └── README.md
 ```
 
 ## Setup
 
-1. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. **Configure environment variables:**
-   Create a `.env` file in the root:
-   ```env
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_SERVICE_KEY=your_supabase_service_key
-   YOUTUBE_API_KEY=your_youtube_api_key
-   ```
-3. **Run the server:**
-   ```bash
-   uvicorn main:app --reload
-   ```
+### 1. Install dependencies (for local development)
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Configure environment variables
+Create a `.env` file in the root:
+```env
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_KEY=your_supabase_service_key
+YOUTUBE_API_KEY=your_youtube_api_key
+# Optionally set the host port for Docker Compose (default is 8000):
+HOST_PORT=8000
+```
+
+### 3. Run with Docker Compose
+Build and start the app using Docker Compose:
+```bash
+docker-compose up --build
+```
+- The app will be available at http://localhost:${HOST_PORT} (default: http://localhost:8000)
+- The Dockerfile is located at `docker/Dockerfile` and is referenced in `docker-compose.yml`.
+
+### 4. Run the server locally (without Docker)
+```bash
+uvicorn main:app --reload
+```
 
 ## API Usage
 
