@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from api.v1.api import api_router
 
-app = FastAPI()
+app = FastAPI(
+    title="Agri Insight",
+    description="API for Agri Insight platform",
+    version="1.0.0"
+)
 
 @app.get("/")
 def root():
