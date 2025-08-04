@@ -8,7 +8,8 @@ router = APIRouter()
 @router.post("/fetch_and_store_transcripts")
 def fetch_and_store_transcripts(playlist_id: str = Query(..., description="YouTube Playlist ID")):
     """
-    Fetch transcripts for all videos in a playlist, embed them, and store in Supabase vector DB.
+    Fetch transcripts for all videos in a playlist, embed them, and store in Supabase vector DB as sanitized, chunked records.
+    Each chunk is embedded and stored separately for semantic search.
     """
     videos = get_playlist_videos(playlist_id)
     results = []
@@ -16,5 +17,6 @@ def fetch_and_store_transcripts(playlist_id: str = Query(..., description="YouTu
         transcript = get_video_transcript(video["videoId"])
         if transcript:
             store_transcript_vector(video["videoId"], video["title"], transcript)
+        print(f"Processed video {video['videoId']} ({video['title']})")
         results.append({"videoId": video["videoId"], "title": video["title"], "transcript": transcript})
     return results

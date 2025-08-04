@@ -20,6 +20,7 @@ class YoutubeTranscript(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     video_id = Column(String, nullable=False)
-    title = Column(Text, nullable=False)
-    transcript = Column(Text)
-    embedding = Column(Vector(384))  # 384 dims for MiniLM-L6-v2 
+    title = Column(Text) 
+    chunk_index = Column(BigInteger, nullable=False)
+    chunk_text = Column(Text, nullable=False)
+    embedding = Column(Vector(384))  # 384 dims for MiniLM-L6-v2

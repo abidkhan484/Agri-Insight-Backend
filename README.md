@@ -1,37 +1,10 @@
 # Agri Insight Backend (LangChain + FastAPI)
 
-This backend service fetches YouTube playlist videos, retrieves their transcripts, embeds them using LangChain, and stores them in a Supabase vector database. Built with FastAPI.
-
-## Features
-- Fetch video transcripts from a YouTube playlist
-- Embed transcripts using Sentence Transformers (via LangChain)
-- Store transcripts and embeddings in Supabase vector DB (pgvector)
-
-## Project Structure
-```
-.
-├── api/
-│   └── v1/
-│       ├── api.py
-│       └── endpoints.py
-├── models/
-├── schemas/
-├── services/
-│   ├── vector_db_service.py
-│   └── youtube_service.py
-├── utils/
-├── main.py
-├── requirements.txt
-├── .env
-├── docker/
-│   └── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
+This backend fetches YouTube playlist videos, retrieves their transcripts, embeds them using LangChain, and stores them in a Supabase vector database. Built with FastAPI.
 
 ## Setup
 
-### 1. Install dependencies (for local development)
+### 1. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
@@ -42,37 +15,38 @@ Create a `.env` file in the root:
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_KEY=your_supabase_service_key
 YOUTUBE_API_KEY=your_youtube_api_key
-# Optionally set the host port for Docker Compose (default is 8000):
-HOST_PORT=8000
+DATABASE_URL=postgresql+psycopg2://<user>:<password>@<host>:5432/<database>
+HOST_PORT=8000  # optional
 ```
 
 ### 3. Run with Docker Compose
-Build and start the app using Docker Compose:
 ```bash
 docker-compose up --build
 ```
 - The app will be available at http://localhost:${HOST_PORT} (default: http://localhost:8000)
-- The Dockerfile is located at `docker/Dockerfile` and is referenced in `docker-compose.yml`.
 
-### 4. Run the server locally (without Docker)
+### 4. Run the server locally
 ```bash
 uvicorn main:app --reload
+```
+
+### 5. Database Migration
+```bash
+alembic upgrade head
 ```
 
 ## API Usage
 
 ### Fetch and Store Transcripts
 - **Endpoint:** `POST /api/v1/youtube/fetch_and_store_transcripts?playlist_id=YOUR_PLAYLIST_ID`
-- **Response:**
-  ```json
-  [
-    {"videoId": "abc123", "title": "Video Title", "transcript": "..."},
-    ...
-  ]
-  ```
+- **Description:** Fetches transcripts for all videos in a playlist, sanitizes and chunks them, embeds each chunk, and stores in the vector DB.
+
+### Query Transcripts
+- **Endpoint:** `POST /api/v1/youtube/query_transcripts`
+- **Body:** `{ "query": "your search query", "top_k": 3 }`
+- **Description:** Returns the most relevant transcript chunks for a given query.
 
 ## Notes
-- The Supabase table `youtube_transcripts` should have columns: `video_id`, `title`, `transcript`, `embedding` (vector/float[]).
 - Make sure your Supabase project has pgvector enabled.
 - The embedding model used is `all-MiniLM-L6-v2` via LangChain's HuggingFaceEmbeddings.
 
@@ -102,3 +76,4 @@ This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migrat
   ```
 
 This will create or update the `youtube_transcripts` table automatically.
+

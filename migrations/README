@@ -1,1 +1,6 @@
 Generic single-database configuration.
+
+# New migration: youtube_transcript_chunks
+To apply the new chunked transcript table, run:
+
+alembic upgrade head
