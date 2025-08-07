@@ -1,7 +1,21 @@
 import os
+import logging
 from fastapi import FastAPI, Depends, HTTPException, status, Security
 from fastapi.security.api_key import APIKeyHeader
 from api.v1.api import api_router
+from config.logger import get_logger
+
+# Set up logging to file only (disable console/stdout handlers)
+logger = get_logger("agri-insight")
+logging.root.handlers = []  # Remove root handlers
+logging.root.addHandler(logger.handlers[0])
+logging.root.setLevel(logging.INFO)
+
+# Remove uvicorn's default handlers (stdout)
+for uvicorn_logger_name in ("uvicorn", "uvicorn.error", "uvicorn.access"):
+    uvicorn_logger = logging.getLogger(uvicorn_logger_name)
+    uvicorn_logger.handlers = []
+    uvicorn_logger.propagate = True
 
 # Load API keys from environment variable (comma-separated)
 API_KEYS = os.getenv("API_KEYS", "")
