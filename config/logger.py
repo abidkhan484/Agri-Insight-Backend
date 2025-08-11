@@ -19,4 +19,6 @@ def get_logger(name: str):
         handler.setFormatter(JsonFormatter())
         logger.setLevel(logging.INFO)
         logger.addHandler(handler)
-    return logger 
+    return logger
+
+log = get_logger("agri-insight")
