@@ -4,28 +4,40 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     container_name: agri-insight-app
-    labels:
-      - "traefik.enable=true"
-      # Tell Traefik which port the service runs on inside the container
-      - "traefik.http.services.agri.loadbalancer.server.port=${HOST_PORT}"
-      # Router configuration
-      - "traefik.http.routers.agri.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.agri.entrypoints=web,websecure"
-      - "traefik.http.routers.agri.tls=true"
-      - "traefik.http.routers.agri.tls.certresolver=mytlschallenge"
-      # Security middleware
-      - "traefik.http.middlewares.agri-headers.headers.SSLRedirect=true"
-      - "traefik.http.middlewares.agri-headers.headers.STSSeconds=315360000"
-      - "traefik.http.middlewares.agri-headers.headers.browserXSSFilter=true"
-      - "traefik.http.middlewares.agri-headers.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.agri-headers.headers.forceSTSHeader=true"
-      - "traefik.http.middlewares.agri-headers.headers.SSLHost=${DOMAIN_NAME}"
-      - "traefik.http.middlewares.agri-headers.headers.STSIncludeSubdomains=true"
-      - "traefik.http.middlewares.agri-headers.headers.STSPreload=true"
-      # Apply middleware to router
-      - "traefik.http.routers.agri.middlewares=agri-headers@docker"
     env_file:
       - .env
     volumes:
       - .:/app
+    ports:
+      - "${HOST_PORT}:${HOST_PORT}"  # Expose app port to host
+    depends_on:
+      - db
+      - libretranslate
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${HOST_PORT}", "--reload"]
+    environment:
+      # Optional: add internal URLs for LibreTranslate and DB
+      - DATABASE_URL=${DATABASE_URL}
+      - LIBRETRANSLATE_URL=${TRANSLATE_API_ENDPOINT}
+
+  db:
+    image: supabase/postgres:17.6.1.029
+    container_name: agri-insight-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: libretranslate
+    ports:
+      - "5000:5000"
+    environment:
+      - LT_LOAD_ONLY=en,hi,bn
+      - LT_FRONTEND_LANGUAGE=en
+    command: ["--host", "0.0.0.0", "--port", "5000"]
+
+volumes:
+  pgdata:

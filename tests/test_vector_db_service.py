@@ -24,8 +24,8 @@ def test_fetch_and_store_transcripts(monkeypatch):
         return [{"videoId": "abc123", "title": "Test Video"}]
     def mock_get_video_transcript(video_id):
         return "This is a test transcript."
-    def mock_store_transcript_vector(video_id, title, transcript):
-        return None
+    async def mock_store_transcript_vector(video_id, title, transcript):
+        return True
     monkeypatch.setattr("services.youtube_service.get_playlist_videos", mock_get_playlist_videos)
     monkeypatch.setattr("services.youtube_service.get_video_transcript", mock_get_video_transcript)
     monkeypatch.setattr("services.vector_db_service.store_transcript_vector", mock_store_transcript_vector)
@@ -34,8 +34,8 @@ def test_fetch_and_store_transcripts(monkeypatch):
     assert response.json()[0]["videoId"] == "abc123"
 
 def test_query_transcripts_api(monkeypatch):
-    def mock_query_transcripts(query, top_k=3):
-        return [{"chunk_text": "Relevant chunk", "score": 0.99}]
+    async def mock_query_transcripts(query, top_k=3):
+        return [{"chunk_text": "Relevant chunk", "similarity": 0.99}]
     monkeypatch.setattr("services.vector_db_service.query_transcripts", mock_query_transcripts)
     response = client.post("/api/v1/youtube/query_transcripts", json={"query": "test", "top_k": 1})
     assert response.status_code == 200

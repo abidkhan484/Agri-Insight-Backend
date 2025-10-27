@@ -1,6 +1,6 @@
 # Agri Insight Backend (LangChain + FastAPI)
 
-This backend fetches YouTube playlist videos, retrieves their transcripts, embeds them using LangChain, and stores them in a Supabase vector database. Built with FastAPI.
+This backend fetches YouTube playlist videos, retrieves their transcripts, embeds them using LangChain, and stores them in a PostgreSQL vector database with pgvector. Built with FastAPI.
 
 ## Setup
 
@@ -12,10 +12,8 @@ pip install -r requirements.txt
 ### 2. Configure environment variables
 Create a `.env` file in the root:
 ```env
-SUPABASE_URL=your_supabase_url
-SUPABASE_SERVICE_KEY=your_supabase_service_key
-YOUTUBE_API_KEY=your_youtube_api_key
 DATABASE_URL=postgresql+psycopg2://<user>:<password>@<host>:5432/<database>
+API_KEYS=your_api_key_1,your_api_key_2  # comma-separated
 HOST_PORT=8000  # optional
 ```
 
@@ -47,7 +45,7 @@ alembic upgrade head
 - **Description:** Returns the most relevant transcript chunks for a given query.
 
 ## Notes
-- Make sure your Supabase project has pgvector enabled.
+- Make sure your PostgreSQL database has the pgvector extension enabled.
 - The embedding model used is `all-MiniLM-L6-v2` via LangChain's HuggingFaceEmbeddings.
 
 ## Database Migrations
@@ -55,7 +53,7 @@ alembic upgrade head
 This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migrations, similar to Laravel's artisan migrate.
 
 ### Setup
-1. Set your Supabase/Postgres connection string in the `.env` file as `DATABASE_URL`:
+1. Set your PostgreSQL connection string in the `.env` file as `DATABASE_URL`:
    ```env
    DATABASE_URL=postgresql+psycopg2://<user>:<password>@<host>:5432/<database>
    ```

@@ -1,19 +1,8 @@
 from sqlalchemy import Column, BigInteger, String, Text
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.types import TypeDecorator, ARRAY, Float
+from pgvector.sqlalchemy import Vector
 
 Base = declarative_base()
-
-class Vector(TypeDecorator):
-    impl = ARRAY(Float)
-    cache_ok = True
-    def __init__(self, dimensions, **kwargs):
-        super().__init__(Float, **kwargs)
-        self.dimensions = dimensions
-    def process_bind_param(self, value, dialect):
-        return value
-    def process_result_value(self, value, dialect):
-        return value
 
 class YoutubeTranscript(Base):
     __tablename__ = "youtube_transcripts"
@@ -24,3 +13,5 @@ class YoutubeTranscript(Base):
     chunk_index = Column(BigInteger, nullable=False)
     chunk_text = Column(Text, nullable=False)
     embedding = Column(Vector(384))  # 384 dims for MiniLM-L6-v2
+    
+    # Note: Index is created in migration file

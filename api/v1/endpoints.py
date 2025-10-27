@@ -33,12 +33,12 @@ async def store_transcript_vector_api(
     transcript: str = Body(..., embed=True)
 ):
     """
-    Store transcript in Supabase vector DB after chunking and embedding.
+    Store transcript in PostgreSQL vector DB after chunking and embedding.
     """
     await store_transcript_vector(video_id, title, transcript)
     return {"status": "success", "videoId": video_id}
 
 @router.post("/query_transcripts")
-def query_transcripts_api(query: str = Body(..., embed=True), top_k: int = 3):
-    results = query_transcripts(query, top_k=top_k)
+async def query_transcripts_api(query: str = Body(..., embed=True), top_k: int = 3):
+    results = await query_transcripts(query, top_k=top_k)
     return results

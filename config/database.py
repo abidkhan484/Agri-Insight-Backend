@@ -1,15 +1,23 @@
 import os
 from dotenv import load_dotenv
-from supabase import create_client, Client
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.pool import NullPool
 
 load_dotenv()
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 
-if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
-    raise ValueError("Missing SUPABASE_URL or SUPABASE_SERVICE_KEY in environment variables.")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-def get_supabase_client() -> Client:
-    return create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+if not DATABASE_URL:
+    raise ValueError("Missing DATABASE_URL in environment variables.")
 
-supabase: Client = get_supabase_client()
+engine = create_engine(DATABASE_URL, poolclass=NullPool)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def get_db() -> Session:
+    """Dependency to get DB session"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

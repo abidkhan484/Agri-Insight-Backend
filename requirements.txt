@@ -3,7 +3,6 @@ uvicorn[standard]
 langchain-community
 youtube-transcript-api
 requests
-supabase
 python-dotenv
 psycopg2-binary
 pgvector
